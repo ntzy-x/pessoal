@@ -99,6 +99,13 @@
             border-radius: 8px;
             padding: 12px;
             text-align: center;
+            text-decoration: none;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .stat-box:hover {
+            border-color: var(--accent-color);
         }
 
         .stat-value {
@@ -130,7 +137,7 @@
         }
 
         .btn:hover {
-            background-color: #2ea043; /* Tom estilo GitHub Green para destaque ao visitar */
+            background-color: #2ea043;
         }
     </style>
 </head>
@@ -138,23 +145,23 @@
 
     <div class="profile-card">
         <div class="avatar-container">
-            <!-- Avatar oficial obtido do GitHub do perfil -->
-            <img src="https://avatars.githubusercontent.com/u/295984833?s=200&v=4" alt="ntzy-x" class="avatar">
+            <img src="https://avatars.githubusercontent.com/u/295984833?s=200&v=4" alt="ntzy-x" class="id-avatar avatar">
         </div>
         
         <h1 class="username">ntzy-x</h1>
         <div class="handle">@ntzy-x</div>
         
-        <p class="bio">
-            Desenvolvedor focado em projetos de código aberto e soluções tecnológicas.
+        <p class="bio" id="profile-bio">
+            Carregando informações do perfil...
         </p>
 
         <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-value">4</div>
+            <!-- Caixa de repositórios dinâmica que leva direto para a aba de repositórios do GitHub -->
+            <a href="https://github.com/ntzy-x?tab=repositories" target="_blank" class="stat-box">
+                <div class="stat-value" id="repo-count">-</div>
                 <div class="stat-label">Repositórios</div>
-            </div>
-            <div class="stat-box">
+            </a>
+            <div class="stat-box" style="cursor: default;">
                 <div class="stat-value">GitHub</div>
                 <div class="stat-label">Plataforma</div>
             </div>
@@ -162,6 +169,41 @@
 
         <a href="https://github.com/ntzy-x" target="_blank" class="btn">Visitar Perfil no GitHub</a>
     </div>
+
+    <script>
+        // Função executada assim que a página é carregada
+        async function fetchGitHubData() {
+            try {
+                // Requisição à API pública do GitHub para o usuário ntzy-x
+                const response = await fetch('https://api.github.com/users/ntzy-x');
+                
+                if (!response.ok) {
+                    throw new Error('Não foi possível buscar os dados do GitHub.');
+                }
+                
+                const data = await response.json();
+
+                // Atualiza o número de repositórios públicos na tela
+                document.getElementById('repo-count').textContent = data.public_repos;
+
+                // Opcional: Atualiza a bio automaticamente se você colocar alguma no GitHub no futuro
+                const bioElement = document.getElementById('profile-bio');
+                if (data.bio) {
+                    bioElement.textContent = data.bio;
+                } else {
+                    bioElement.textContent = "Desenvolvedor focado em projetos de código aberto e soluções minimalistas.";
+                }
+
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('repo-count').textContent = '4'; // Valor de fallback caso dê erro
+                document.getElementById('profile-bio').textContent = "Desenvolvedor focado em projetos de código aberto e soluções minimalistas.";
+            }
+        }
+
+        // Chamar a função ao carregar a página
+        fetchGitHubData();
+    </script>
 
 </body>
 </html>
